@@ -6,7 +6,10 @@
 
 using namespace std;
 
-//Graph for storing transactions and items
+// Finds the position of data within the vector
+int find_position(const vector<Node *>& node_vector, char letter);
+
+// Graph for storing transactions and items
 class Graph {
 private:
     //Vector to store all the get_nodes
@@ -28,7 +31,7 @@ public:
 
     //Check if node is present in graph
     bool is_present(const char &data) {
-        for (Node *node: node_vector) {
+        for(Node *node: node_vector) {
             if (node->data == data) {
                 return true;
             }
@@ -36,6 +39,7 @@ public:
         return false;
     }
 
+    //Sorts graph in an ascending order of nodes
     void sort_graph() {
         int size = node_vector.size();
 
@@ -231,17 +235,19 @@ public:
 
     // Inputs the values of get_nodes and edge support count
     void input_graph(Graph &graph) {
+        // Gets the node vector
         vector<Node *> node_vector = graph.get_nodes();
         int matrix = graph.get_size() + 1;
 
+        int node_position = 0;
+
         // Nested for loop for input of all values
         for (Node *node: node_vector) {
-            // Finds position of column of 1-itemsets and adds Sup
-            int node_position = node->data - 'A';
             clm_array[node_position][(node_position * matrix)] = node->weight;
             for (Edge *edge: node->edges) {
                 // Finds position of column of 2-itemsets and adds Sup
-                int to_position = edge->to->data - 'A';
+                int to_position = find_position(node_vector, edge->to->data);
+
                 if (clm_array[node_position][(to_position * matrix)] != 0) {
                     clm_array[node_position][(to_position * matrix)]++;
                 } else {
@@ -254,15 +260,15 @@ public:
                 combination += edge->to->data;
 
                 // Counter for the loop
-                int counter = graph.get_size() - (edge->to->data - 'A') - 1;
+                int counter = graph.get_size() - find_position(node_vector, edge->to->data) - 1;
 
                 // Adds the Sup for 3-itemsets
                 for (pair<string, int> *pairs: combinations) {
                     if (pairs->first.size() == 3) {
                         for (int i = 0; i < counter; i++) {
                             string itemset = combination;
-                            int third_position = (edge->to->data + i + 1) - 'A' + 1;
-                            itemset += edge->to->data + i + 1;
+                            int third_position = to_position + i + 2;
+                            itemset += node_vector.at(to_position + i + 1)->data;
                             if (pairs->first == itemset) {
                                 clm_array[node_position][(to_position * matrix) + third_position] = pairs->second;
                             }
@@ -270,19 +276,21 @@ public:
                     }
                 }
             }
+            node_position ++;
         }
     }
 
-    void find_FI(int minSup, int matrix) {
+    //Finds all the FI according to the MinSup
+    void find_FI(int minSup, int matrix, const vector<Node *>& node_vector) {
         vector<string> FIs;
         string fi;
         // Loop to check all the sup
         for (int i = 0; i < row; i++) {
-            char first = 'A' + i;
+            char first = node_vector.at(i)->data;
             fi += first;
             for (int j = 0; j < column; j++) {
                 if (clm_array[i][j] >= minSup) {
-                    char second = 'A' + (j / matrix);
+                    char second = node_vector.at(j / matrix)->data;
                     if (first == second) {
                         // Stores 1-FI
                         FIs.push_back(fi);
@@ -295,7 +303,7 @@ public:
                         fi = first;
                     } else {
                         // Stores 3-FI
-                        char third = 'A' + (j % matrix) - 1;
+                        char third = node_vector.at((j % matrix) - 1)->data;
                         fi += third;
                         FIs.push_back(fi);
                         fi = first;
@@ -334,21 +342,29 @@ public:
         cout << endl;
     }
 
-    void print(vector<Node *> nodes) {
+    //Showcases the CLM
+    void print(vector<Node *> node_vector) {
         cout << "\n\nCLM:\n\n";
         cout << "  ";
-        for (Node *node1: nodes) {
-            cout << node1->data << " ";
-            for (Node *node2: nodes) {
+        for (Node *node1: node_vector) {
+            cout << "| " << node1->data << " | ";
+            for (Node *node2: node_vector) {
                 cout << node2->data << " ";
             }
+
         }
 
         cout << endl;
         for (int i = 0; i < row; i++) {
-            cout << nodes.at(i)->data << " ";
+            cout << node_vector.at(i)->data << " | ";
             for (int j = 0; j < column; j++) {
-                cout << clm_array[i][j] << " ";
+                if(j == 0){
+                    cout << clm_array[i][j] << " | ";
+                } else if(j % (node_vector.size() + 1) == 0){
+                    cout << "| " << clm_array[i][j] << " | ";
+                } else {
+                    cout << clm_array[i][j] << " ";
+                }
             }
             cout << endl;
         }
@@ -358,12 +374,12 @@ public:
 int main() {
     Graph graph;
 
-    graph.add_transaction("BCDE");
-    graph.add_transaction("ABDE");
-    graph.add_transaction("BCDE");
-    graph.add_transaction("ABCDE");
-    graph.add_transaction("DE");
-    graph.add_transaction("C");
+    graph.add_transaction("EFLY");
+    graph.add_transaction("CELY");
+    graph.add_transaction("EFLY");
+    graph.add_transaction("CEFLY");
+    graph.add_transaction("LY");
+    graph.add_transaction("F");
 
     graph.displayGraph();
 
@@ -373,9 +389,21 @@ int main() {
 
     clm.print(graph.get_nodes());
 
-    clm.find_FI(1, graph.get_size() + 1);
+    clm.find_FI(2, graph.get_size() + 1, graph.get_nodes());
 
     cout << endl;
     system("pause");
     return 0;
+}
+
+// Finds the position of data in the vector
+int find_position(const vector<Node *>& node_vector, char letter){
+    int position = 0;
+    for(Node* node : node_vector){
+        if(node->data == letter){
+            return position;
+        }
+        position ++;
+    }
+    return -1;
 }

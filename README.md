@@ -2,7 +2,7 @@
 Extracting `MFI (Maximum Frequent Itemset)` is one of the problem in computer science. It is famously known as `Market Basket Analysis`. In this project I am using a Data Structure known as `CLM (Completely Linked Matrix)` to find MFI more efficiently than ever requiring less time and space. The current project works for extracting `3-FI (FI with 3 itemset length)` and the MFI from them. Further work is being done to enhance the scope to finding FI of greater itemset length.
 
 ## Getting Started
-To be able to have this project work on your local machine, all you need is a C++ compiler such as [MinGW](https://www.mingw-w64.org/downloads/) which you can also download through [MSYS2](https://www.msys2.org/). After installing a compiler you can download a Code Editor like [VSC](https://code.visualstudio.com/download) or an IDE like [Clion](https://www.jetbrains.com/clion/download/#section=windows) for viewing the code and editing it.
+To be able to have this project work on your local machine, all you need is a C++ compiler such as [Clang](https://clang.llvm.org/) which can be downloaded through [MinGW](https://www.mingw-w64.org/downloads/); a cross compilation toolchain. If you are having difficulties downloading MinGW, it can also be downloaded through [MSYS2](https://www.msys2.org/). After installing a compiler you can download a Code Editor like [VSC](https://code.visualstudio.com/download) or an IDE like [Clion](https://www.jetbrains.com/clion/download/#section=windows) for viewing the code and editing it.
 
 ### Installing 
 You can simply add this project to your system using Git Clone or just downloading this project as a zip file and then extracting it.
