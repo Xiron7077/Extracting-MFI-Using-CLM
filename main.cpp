@@ -374,12 +374,12 @@ public:
 int main() {
     Graph graph;
 
-    graph.add_transaction("EFLY");
-    graph.add_transaction("CELY");
-    graph.add_transaction("EFLY");
-    graph.add_transaction("CEFLY");
-    graph.add_transaction("LY");
-    graph.add_transaction("F");
+    graph.add_transaction("BCDE");
+    graph.add_transaction("ABDE");
+    graph.add_transaction("BCDE");
+    graph.add_transaction("ABCDE");
+    graph.add_transaction("DE");
+    graph.add_transaction("C");
 
     graph.displayGraph();
 
